@@ -1,6 +1,7 @@
 'use strict'
 
 const Persona = use('Persona')
+const Encryption = use('Encryption')
 
 class UserController {
 
@@ -10,9 +11,14 @@ class UserController {
     const user = await Persona.register(payload)
     const token = await auth.newRefreshToken().generate(user)
 
-    console.log(token)
-
     return response.status(200).json({ token })
+  }
+
+  async verify ({ params, response }) {
+    const { token } = params
+    await Persona.verifyEmail(use('Encryption').base64Decode(token))
+  
+    return response.json(200).json({ status: 'active' })
   }
 
   /*async login ({ request, auth, response }) {
